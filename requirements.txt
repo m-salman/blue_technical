@@ -3,3 +3,4 @@ pynamodb==2.0.3
 bottle==0.12.13
 bottle-swagger==1.2.0
 elasticsearch==5.2.0
+invoke==0.16.3
