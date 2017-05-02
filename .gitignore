@@ -3,4 +3,4 @@
 *.pyc
 **/.envrc
 **/.direnv/
-
+**/es_data/
