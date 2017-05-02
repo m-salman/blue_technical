@@ -21,15 +21,12 @@ def _load_swagger_def():
 
     return _swagger_def
 
+# Load swagger definitions and install Swagger plugin
 swagger_def = _load_swagger_def()
 bottle.install(SwaggerPlugin(swagger_def))
 
 # Setup swagger endpoints
 app = bottle.Bottle()
-
-@app.get('/')
-def index_redirect():
-    bottle.redirect("/api-docs/")
 
 @app.get('/api-docs')
 def api_docs_redirect():

@@ -1,10 +1,8 @@
-import json
 import bottle
 import logging
-from config import config
 from datetime import datetime
-from helpers.es_client import ElasticSearchClient
-from helpers.response_helper import build_response
+from src.helpers.es_client import ElasticSearchClient
+from src.helpers.response_helper import build_response
 
 logger = logging.getLogger(__name__)
 app = bottle.Bottle()
@@ -19,19 +17,27 @@ def fetch_tags(tag_name, date):
 
     logger.info("msg=Fetching articles | Tag={} | Date={}".format(tag_name, date))
 
+    # Format the date time to %Y-%m-%d format
     try:
         formatted_date = datetime.strptime(date, '%Y%m%d').strftime('%Y-%m-%d')
     except TypeError:
         logger.exception("msg=Invalid date format, please provide date as YYYYmmdd")
+        return bottle.HTTPResponse(status=400, body=build_response(400, 'Invalid date format provided!'))
 
+    # Fetch the articles by matching tags, then filtering by date. ElasticSearch backend
+    # ensures this is all done in constant time O(c).
     articles = es_client.fetch_articles_using_tag(tag_name, formatted_date)
 
     if not articles:
         logger.warning("msg=No articles found for tag={} and date={}".format(tag_name, date))
         return bottle.HTTPResponse(status=404, body=build_response(404, 'Not found!'))
 
+    # Aggregate tag counts and build set for related tags
     tag_counts, related_tags = aggregate_article_tags(tag_name, articles)
-    latest_articles = sort_articles_by_time(articles)
+
+    # Sort the articles by epoch time field attached to each article.
+    # Get the top 10 items
+    latest_articles = sort_articles_by_time(articles, top_items=10)
 
     result = {'tag': tag_name,
               'count': tag_counts,

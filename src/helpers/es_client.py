@@ -1,7 +1,7 @@
 import time
 import logging
-from config import config
-from helpers.singleton import Singleton
+from src.config import config
+from src.helpers.singleton import Singleton
 from elasticsearch import Elasticsearch, ElasticsearchException
 
 logger = logging.getLogger(__name__)

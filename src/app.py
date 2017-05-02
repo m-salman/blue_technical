@@ -1,8 +1,8 @@
 import bottle
 import logging
-from endpoints import tags
-from endpoints import article
-from endpoints import swagger
+from src.endpoints import tags
+from src.endpoints import article
+from src.endpoints import swagger
 
 
 logging.basicConfig(level=logging.INFO,

@@ -1,11 +1,12 @@
 import json
 import bottle
 import logging
-from helpers.es_client import ElasticSearchClient
-from helpers.response_helper import build_response
+from src.helpers.es_client import ElasticSearchClient
+from src.helpers.response_helper import build_response
 
 logger = logging.getLogger(__name__)
 app = bottle.Bottle()
+
 
 @app.post('/articles')
 def post_article():
@@ -20,6 +21,7 @@ def post_article():
         return bottle.HTTPResponse(status=200, body=build_response(200, 'Success'))
     else:
         return bottle.HTTPResponse(status=500, body=build_response(500, 'Server error, failed to process article!'))
+
 
 @app.get('/articles/<article_id>')
 def get_article(article_id):
@@ -38,4 +40,3 @@ def _is_valid_request(req_params):
         return True
     else:
         False
-
