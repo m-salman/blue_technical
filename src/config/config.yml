@@ -1,0 +1,13 @@
+docker:
+  es_host: localhost
+  es_port: 9200
+  es_index: articles
+
+dev:
+  es_host: <dev-cluster>
+  es_port: 443
+
+prod:
+  es_host: <prod-cluster>
+  es_port: 443
+
