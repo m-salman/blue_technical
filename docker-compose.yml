@@ -1,0 +1,27 @@
+---
+version: '2'
+services:
+  elastic_search:
+    image: elasticsearch
+    volumes:
+      - ./es_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+  article_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: article_api:latest
+    working_dir: /usr/src/app
+    environment:
+      - PYTHONPATH=/usr/src/app
+      - ENV=docker
+    command: python src/app.py
+    volumes:
+      - .:/usr/src/app
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    links:
+      - elastic_search

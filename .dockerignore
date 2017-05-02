@@ -1,0 +1,6 @@
+*.pyc
+*.iml
+/.envrc
+/.direnv/
+/.idea/
+/.git/
