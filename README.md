@@ -80,9 +80,9 @@ To run the unit tests:
 $ invoke test
 ```
 
-You can also run the full CI tests in a Docker container
+You can also run the tests in a Docker container
 ```shell
-$ docker-compose run api invoke ci
+$ docker-compose run api invoke test
 ```
 
 ## Configuring
@@ -91,3 +91,13 @@ Config files are located in `src/config`. The configuration system defaults to `
 change this by setting `ENV=<your-env>` environment variable.
 Initially, the settings in `docker` get applied. These are then overriden by the value of your `ENV` environment variable,  (say `prod`) if `ENV=prod` environment variable is set.
 
+## Assumptions
+The date field is not enough to get last 10 items returned by the /tags endpoint. To overcome this issue,
+an epoch time feild is attached to each article. When articles are fetched for a single date, the articles within are sorted using epoch time.
+
+## Caveats
+ElasticSearch builds an inverted index and as such the concept of nested types and arrays is different than normal data stores.Please refer to [Array Types](https://www.elastic.co/guide/en/elasticsearch/reference/current/array.html) and [Nested Type](https://www.elastic.co/guide/en/elasticsearch/reference/current/nested.html)
+
+To build an inverted index an analyzer is run on top of each item in tags list. This can cause problems with tags like `health-soda`, the anaylyzer will break it up as `health` and `soda` and searching for either one will bring back tags marked as 'health', 'soda' and 'health-soda' as well.
+
+This can easily be fixed by mapping the tags field as `not_analyzed` when building the index. As of now, this hasn't been done as part of this build.
