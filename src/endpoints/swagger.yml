@@ -1,0 +1,126 @@
+swagger: '2.0'
+info:
+  title: Article API
+  version: 0.0.1
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+definitions:
+  Error:
+    type: object
+    required:
+    - message
+    - code
+    properties:
+      message:
+        type: string
+      code:
+        type: integer
+        minimum: 100
+        maximum: 600
+
+  Article:
+    type: object
+    required: [id]
+    properties:
+      id: {type: string}
+      title: {type: string}
+      body: {type: string}
+      date: {type: string}
+      tags:
+        type: array
+        items:
+          type: string
+
+  TagSummary:
+    type: object
+    properties:
+      tag: {type: string}
+      count: {type: integer}
+      articles:
+        type: array
+        items:
+          type: string
+      related_tags:
+        type: array
+        items:
+          type: string
+
+  Response:
+    type: object
+    properties:
+      status: {type: string}
+      reason: {type: integer}
+
+
+paths:
+  /articles/{article_id}:
+    get:
+      description: Returns articles based on ID
+      tags:
+        - Articles
+      parameters:
+        - name: article_id
+          in: path
+          description: article ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Article'
+        '404':
+          description: Article ID not found in data store
+          schema: {$ref: '#/definitions/Error'}
+
+  /articles:
+    post:
+      description: Adds or updates an article in the data store
+      tags:
+        - Articles
+      parameters:
+        - name: article
+          description: The article ID to save or update
+          in: body
+          required: true
+          schema: {$ref: '#/definitions/Article'}
+      responses:
+        '200':
+          description: Article successfully added to datastore
+          schema: {$ref: '#/definitions/Response'}
+        '400':
+          description: Bad request
+          schema: {$ref: '#/definitions/Response'}
+        '500':
+          description: API failed to add/update article
+
+
+  /tags/{tag_name}/{date}:
+    get:
+      description: Returns and aggregates articles with tag name and date
+      tags:
+        - Tags
+      parameters:
+        - name: tag_name
+          description: Tag name to search in articles
+          in: path
+          required: true
+          type: string
+        - name: date
+          description: The date to search for articles on given as YYYYMMDD e.g. 20160922
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Summary data for tags for given date
+          schema: {$ref: '#/definitions/TagSummary'}
+        '404':
+          description: Failed to retrieve tag summary from data store
+          schema: {$ref: '#/definitions/Error'}
+
+
